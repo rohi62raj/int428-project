@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy Generator</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbb;
+            --accent-color: #ff6b6b;
+            --background-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #e1e5eb;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto 20px;
+        }
+
+        .flex-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .flex-container {
+                flex-direction: column;
+            }
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .checkbox-group {
+            margin-bottom: 20px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .custom-sections {
+            margin-top: 20px;
+        }
+
+        .section-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .section-item input {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        button.secondary {
+            background-color: #6c757d;
+        }
+
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        #resultSection {
+            display: none;
+            margin-top: 30px;
+        }
+
+        #generatedPolicy {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 30px;
+            white-space: pre-wrap;
+            font-size: 16px;
+            line-height: 1.8;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: var(--accent-color);
+            background-color: #ffeeee;
+            border: 1px solid #ffcccc;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .status-message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .warning {
+            background-color: #fff8e1;
+            color: #f57f17;
+            border: 1px solid #ffecb3;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Privacy Policy Generator</h1>
+            <p class="description">Create a customized privacy policy for your website or application using Mistral AI. Simply fill in your details, select your preferences, and generate a professional privacy policy.</p>
+        </header>
+
+        <div class="flex-container">
+            <div class="card">
+                <h2>Company Information</h2>
+                <div class="form-group">
+                    <label for="companyName">Company Name *</label>
+                    <input type="text" id="companyName" required />
+                </div>
+                <div class="form-group">
+                    <label for="website">Website URL *</label>
+                    <input type="text" id="website" required />
+                </div>
+                <div class="form-group">
+                    <label for="email">Contact Email *</label>
+                    <input type="email" id="email" required />
+                </div>
+                <div class="form-group">
+                    <label for="location">Company Location *</label>
+                    <input type="text" id="location" placeholder="Country/Region" required />
+                </div>
+                <div class="form-group">
+                    <label for="businessType">Type of Business *</label>
+                    <input type="text" id="businessType" placeholder="e.g., E-commerce, Blog, SaaS" required />
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Policy Options</h2>
+                
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="dataCollection" checked />
+                        <label for="dataCollection">Data Collection</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="dataUsage" checked />
+                        <label for="dataUsage">Data Usage</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="dataSharing" checked />
+                        <label for="dataSharing">Data Sharing</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="cookies" checked />
+                        <label for="cookies">Cookies Policy</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="userRights" checked />
+                        <label for="userRights">User Rights</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="dataSecurity" checked />
+                        <label for="dataSecurity">Data Security Measures</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="internationalTransfers" checked />
+                        <label for="internationalTransfers">International Data Transfers</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="retention" checked />
+                        <label for="retention">Data Retention Policy</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="children" checked />
+                        <label for="children">Children's Privacy</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="updates" checked />
+                        <label for="updates">Policy Update Procedures</label>
+                    </div>
+                </div>
+
+                <h3>Compliance</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gdpr" />
+                        <label for="gdpr">GDPR (EU)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ccpa" />
+                        <label for="ccpa">CCPA (California)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="cppa" />
+                        <label for="cppa">CPPA (California)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="coppa" />
+                        <label for="coppa">COPPA (Children's Privacy)</label>
+                    </div>
+                </div>
+
+                <div class="custom-sections">
+                    <h3>Custom Sections</h3>
+                    <p>Add additional sections to your privacy policy:</p>
+                    <div id="sectionsList">
+                        <!-- Dynamic sections will be added here -->
+                    </div>
+                    <button type="button" id="addSectionBtn" class="secondary">Add Section</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="button" id="generateBtn">Generate Privacy Policy</button>
+        </div>
+
+        <div id="loadingSection" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Generating your privacy policy... This may take a moment.</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <div id="resultSection">
+            <h2>Generated Privacy Policy</h2>
+            <div id="generatedPolicy"></div>
+            <div class="controls">
+                <button id="copyBtn">Copy to Clipboard</button>
+                <button id="downloadBtn">Download as Markdown</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hardcoded API key
+            const API_KEY = "8USuUmzTM6gpttDmN1wvQJZ6M5h6CmK3";
+
+            // Set up custom sections
+            const sectionsList = document.getElementById('sectionsList');
+            const addSectionBtn = document.getElementById('addSectionBtn');
+
+            addSectionBtn.addEventListener('click', function() {
+                addCustomSection();
+            });
+
+            function addCustomSection(value = '') {
+                const sectionItem = document.createElement('div');
+                sectionItem.className = 'section-item';
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'custom-section-input';
+                input.placeholder = 'Section title';
+                input.value = value;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'secondary';
+                removeBtn.textContent = 'Remove';
+                removeBtn.addEventListener('click', function() {
+                    sectionsList.removeChild(sectionItem);
+                });
+                
+                sectionItem.appendChild(input);
+                sectionItem.appendChild(removeBtn);
+                sectionsList.appendChild(sectionItem);
+            }
+
+            // Generate button
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.addEventListener('click', generatePrivacyPolicy);
+
+            // Copy button
+            document.getElementById('copyBtn').addEventListener('click', function() {
+                const policyText = document.getElementById('generatedPolicy').textContent;
+                navigator.clipboard.writeText(policyText)
+                    .then(() => {
+                        alert('Privacy policy copied to clipboard!');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+            });
+
+            // Download button
+            document.getElementById('downloadBtn').addEventListener('click', function() {
+                const policyText = document.getElementById('generatedPolicy').textContent;
+                const companyName = document.getElementById('companyName').value;
+                const filename = `${companyName.toLowerCase().replace(/\s+/g, '_')}_privacy_policy.md`;
+                
+                const blob = new Blob([policyText], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                
+                URL.revokeObjectURL(url);
+            });
+
+            // Main function to generate the privacy policy
+            async function generatePrivacyPolicy() {
+                // Validate required fields
+                const companyName = document.getElementById('companyName').value.trim();
+                const website = document.getElementById('website').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const location = document.getElementById('location').value.trim();
+                const businessType = document.getElementById('businessType').value.trim();
+
+                if (!companyName || !website || !email || !location || !businessType) {
+                    showError('Please fill in all required company information fields');
+                    return;
+                }
+
+                // Get policy options
+                const options = {
+                    dataCollection: document.getElementById('dataCollection').checked,
+                    dataUsage: document.getElementById('dataUsage').checked,
+                    dataSharing: document.getElementById('dataSharing').checked,
+                    cookies: document.getElementById('cookies').checked,
+                    userRights: document.getElementById('userRights').checked,
+                    dataSecurity: document.getElementById('dataSecurity').checked,
+                    internationalTransfers: document.getElementById('internationalTransfers').checked,
+                    retention: document.getElementById('retention').checked,
+                    children: document.getElementById('children').checked,
+                    updates: document.getElementById('updates').checked,
+                    gdpr: document.getElementById('gdpr').checked,
+                    ccpa: document.getElementById('ccpa').checked,
+                    cppa: document.getElementById('cppa').checked,
+                    coppa: document.getElementById('coppa').checked,
+                };
+
+                // Get custom sections
+                const customSections = [];
+                document.querySelectorAll('.custom-section-input').forEach(input => {
+                    if (input.value.trim()) {
+                        customSections.push(input.value.trim());
+                    }
+                });
+
+                // Show loading indicator
+                document.getElementById('loadingSection').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+                document.getElementById('resultSection').style.display = 'none';
+
+                try {
+                    // Create the prompt
+                    const prompt = createPrompt(
+                        companyName, 
+                        website, 
+                        email, 
+                        location, 
+                        businessType, 
+                        options, 
+                        customSections
+                    );
+
+                    // Call Mistral API with the hardcoded API key
+                    const policy = await callMistralAPI(API_KEY, prompt);
+                    
+                    // Display the result
+                    document.getElementById('generatedPolicy').textContent = policy;
+                    document.getElementById('resultSection').style.display = 'block';
+                } catch (error) {
+                    showError(`Error: ${error.message}`);
+                } finally {
+                    document.getElementById('loadingSection').style.display = 'none';
+                }
+            }
+
+            function createPrompt(companyName, website, email, location, businessType, options, customSections) {
+                let prompt = `
+Create a comprehensive privacy policy for ${companyName} with the following details:
+
+- Company name: ${companyName}
+- Website: ${website}
+- Contact email: ${email}
+- Based in: ${location}
+- Type of business: ${businessType}
+
+The privacy policy should cover:
+`;
+                
+                if (options.dataCollection) {
+                    prompt += "- What personal data is collected\n";
+                }
+                
+                if (options.dataUsage) {
+                    prompt += "- How the collected data is used\n";
+                }
+                
+                if (options.dataSharing) {
+                    prompt += "- Third parties with whom data may be shared\n";
+                }
+                
+                if (options.cookies) {
+                    prompt += "- Cookie usage policy\n";
+                }
+                
+                if (options.userRights) {
+                    prompt += "- User rights regarding their data\n";
+                }
+                
+                if (options.dataSecurity) {
+                    prompt += "- Data security measures\n";
+                }
+                
+                if (options.internationalTransfers) {
+                    prompt += "- International data transfers\n";
+                }
+                
+                if (options.retention) {
+                    prompt += "- Data retention policies\n";
+                }
+                
+                if (options.children) {
+                    prompt += "- Children's privacy\n";
+                }
+                
+                if (options.updates) {
+                    prompt += "- Policy for privacy policy updates\n";
+                }
+                
+                // Compliance
+                const complianceLaws = [];
+                if (options.gdpr) complianceLaws.push("GDPR");
+                if (options.ccpa) complianceLaws.push("CCPA");
+                if (options.cppa) complianceLaws.push("CPPA");
+                if (options.coppa) complianceLaws.push("COPPA");
+                
+                if (complianceLaws.length > 0) {
+                    prompt += `- Compliance with: ${complianceLaws.join(', ')}\n`;
+                }
+                
+                // Custom sections
+                if (customSections.length > 0) {
+                    prompt += "- Additional custom sections:\n";
+                    customSections.forEach(section => {
+                        prompt += `  - ${section}\n`;
+                    });
+                }
+                
+                const date = new Date();
+                prompt += `\nThe policy should be formatted in clean markdown and dated ${date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.`;
+                
+                return prompt;
+            }
+
+            async function callMistralAPI(apiKey, prompt) {
+                const url = 'https://api.mistral.ai/v1/chat/completions';
+                
+                const payload = {
+                    model: "mistral-large-latest",
+                    messages: [
+                        {
+                            role: "system",
+                            content: "You are a legal assistant specializing in creating privacy policies. Generate a comprehensive, legally sound privacy policy based on the provided information."
+                        },
+                        {
+                            role: "user",
+                            content: prompt
+                        }
+                    ],
+                    temperature: 0.3,
+                    max_tokens: 4000
+                };
+                
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error?.message || `API returned status ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    return data.choices[0].message.content;
+                } catch (error) {
+                    console.error('API Error:', error);
+                    throw error;
+                }
+            }
+
+            function showError(message) {
+                const errorElement = document.getElementById('errorMessage');
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                document.getElementById('loadingSection').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
